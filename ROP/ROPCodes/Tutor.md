@@ -1,71 +1,79 @@
-# Assembler Syntax Translation
+# 汇编器语法
 
-## 1. `org`  
-Starts a new code segment and sets the starting address. All addresses (label calculations) in this segment will begin at this address. Labels can also be used to define addresses.  
+## 1. org  
+开启一个新的代码段并设置起始地址。本段中所有的地址（标签计算）以这个地址开始。也可以使用标签定义地址。  
 ```
-org 0x3a3b ; The starting address of this segment is 3a3b
+org 0x3a3b ; 这一段的起始地址为3a3b
 hex .. ..
-label: ; The label is located at 3a3c
-org 0x4a4b ; The starting address of this segment is 4a4b
-org &label +2 ; The starting address of this segment is 3a3e
-org & +10 ; The starting address of this segment is 3a4e
-; Note: A space must follow the `&` symbol
+label: ; 标签位置在3a3c
+org 0x4a4b ; 这一段的起始地址为4a4b
+org &label +2 ; 这一段的起始位置为3a3e
+org & +10 ; 这一段的起始位置为3a4e
+;注意，&后要加上空格
 ```
-When `org` is followed by curly braces, it denotes an inserted code segment. After the braces, the code returns to the previous segment.  
+org后跟大括号代表插入代码段，大括号结束时回到之前的段。    
 ```
 org 0xd522
-hex .. .. ; This is at address d524
-org & -8 { ; This segment starts at d51c (note the required space)
+hex .. .. ; 这里是d524
+org & -8 { ; 这一段的起始位置为d51c（注意要加空格)
     hex .. .. .. ..
 }
-; This returns to address d524
+; 这里又回到了d524
 ```
-If two segments overlap, the assembler will merge the code. However, any conflicts will result in an error.
-
-## 2. `hex`  
+如果两段重合，编译器会合并代码，一旦出现冲突就会报错。
+## 2. hex  
 ```
 hex 3. .. 30 43
 ```
-Writes raw hexadecimal data directly, treated as a sequence of hexadecimal values. `.` represents a placeholder for any value (determined by the assembler). `hex` can be omitted.  
+直接写16进制，内容会直接原封不动视为一串16进制。.代表可以取任何值（由编译器决定）。hex可以省略。  
 
-## 3. Labels / Addressing  
+## 3. 标签/取地址  
 
 ```
 #org d522
 hex 33 33 
-loop:   ; <-- At this point, the label represents the address (0xd522 + 2 = 0xd524)
+loop:   ;<--此时，标签代表的地址是(0xd522+2=0xd524)
 hex .. .. .. ..
-adr loop ; <-- 'adr loop' will be replaced with: hex 24 d5 (d524, the address of `loop`)
-adr loop 55 ; <-- 0xd524 + 55
-adr loop -2 ; <-- 0xd522
-adr +2 ; <-- Without specifying a label name, it calculates from the current address (d52e) and replaces with d530
+adr loop ; <-- 'adr loop' 会被替换成：hex 24 d5 (d524, loop的地址)
+adr loop 55 ; <- 0xd524+55
+adr loop -2 ; <- 0xd522
+adr +2 ; <-- 不写标签名，则表示从当前地址(d52e)起算，替换成d530
+
 ```
 
-## 4. Function Labels  
-All available labels can be found in `sym.txt`.  
-Note: All labels must be used on a separate line.  
+## 4. 函数标签  
+所有可用标签请查看sym.txt  
+注意，所有标签使用需要单独成行
 ```
-Example: Line 115 in sym.txt:
+例子：sym.txt 115 行：
 20840       and r1, 15, sll r0, 4, or r1, r0
-When used in assembly:
+当你在汇编中，使用
 and r1, 15, sll r0, 4, or r1, r0
-It will be replaced with: hex 40 08 .2 ..
+会被替换为 hex 40 08 .2 ..
 ```
 
 ```
-Example 2: Line 115 in sym.txt:
+例子2：sym.txt 115 行：
 @0F746       read_key
-When used in assembly:
+当你在汇编中，使用
 read_key
-It will be replaced with: hex 48 f7 .2 .. (Note: When the address starts with '@', the assembler automatically adds 2 to the address)
+会被替换为 hex 48 f7 .2 ..(注意,当地址前面带'@',汇编器会自动将地址+2)
 ```
 
-Use `def` to define labels, such as `def @22040 diag`.
+用def来定义标签，如`def @22040 diag`。
 
-For function labels with parameters: Follow the address with parentheses indicating the number of bytes to pop when calling the label. Do not include `pop pc` in the count. For example, a label for `pop qr0` can be defined as `def 130e2(8) pop qr0`. When calling such function labels in the program, the parentheses must contain the appropriate number of bytes, e.g., `pop qr0 (31 32 .. .. .. .6 7. fe)`.
+带参数个数的函数标签：在地址后面跟括号，里面写调用这个标签时pop的字节数。pop pc不算在内。例如pop qr0的标签可以写作`def 130e2(8) pop qr0`。在程序中调用这类函数标签，后面必须跟括号，里面是相应数目的字节。例如`pop qr0 (31 32 .. .. .. .6 7. fe)`。
 
-## 5. Using `asm.py`  
+## 5.使用asm.py
+Windows:
 ```
-python3.exe .\asm.py xxx (the file you want to compile)
-python3.exe .\asm.py xxx (the file you want to compile) -min ; Outputs the hex `..` exactly as-is, without automatic replacement
+python3.exe .\asm.py xxx (你想编译的文件）
+python3.exe .\asm.py xxx (你想编译的文件）-min  ;原封不动输出 hex中的 ..  而不是自动替换
+
+```
+Linux:
+```
+python3 ./asm.py xxx (你想编译的文件）
+python3 ./asm.py xxx (你想编译的文件）-min  ;原封不动输出 hex中的 ..  而不是自动替换
+
 ```
