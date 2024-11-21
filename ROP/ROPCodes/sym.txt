@@ -1,142 +1,120 @@
 ; content here is used for assembler to work
 ; MODIFY CAREFULLY!
 
-086f0       memcpy
-08fbe       memset
+09450       memcpy
+09d3a       memset
 203C8       smart_strcpy
 203D6       smart_strcat
 @203B8       smart_strlen 
-2235a       line_print
-221b2       smallprint
-220fe       line_print_col0
-;FE 08 km->mile
-22108       line_print_Col3
-@221AC       printline 
-08c5a       printmultiline
+23f62       line_print
+23dcc       smallprint
+23d14       line_print_col0
 
-22492        hex_byte
+23d1e       line_print_Col3
+@23dc8       printline 
+099d2       printmultiline
 
-@086F8       render_e3d4
-@08704       render_ddd4
-@08704       flush_screen
+24010        hex_byte
 
-@08FB8       memzero
+@09470       render_e3d4
+@0947c       render_ddd4
+@0947c       flush_screen
 
-@1F99C       reset_routine
+@09d34       memzero
 
-29D5C       get_string_constant
-@07EAC       fill_screen
-221c4       waitkey
-@0F746       read_key
-;convert read_phy_key result (er0) to key code
-252dc       key_cvt  
+@26086       reset_routine
 
-119B6       setlr_cmp
+24bd6       get_string_constant
+@08c0c       fill_screen
+23DDE       waitkey
+@1F24E       read_key
 
-@0916A       delay
-093FE       _start
-24E36       main
+29892       key_cvt  
 
-@086E0       buf1_to_buf2
+1197c       setlr_cmp
 
-@26226       byte_strlen
+@09f3a       delay
+0a1ce       _start
+293d8       main
 
-@22040       diagnostic_mode
-@2209E       diagnostic
+@09440       buf1_to_buf2
+
+2ab26       byte_strlen
+
+@23c4c       diagnostic_mode
+@23cb4       diagnostic
 
 
-@2A048       line_print__call__
+@2edc8       line_print__call__
 
-@082EC       char_print_1byte
-@082F6       char_print
+@0904c       char_print_1byte
+@09056       char_print
 
-084D8       char_get_14
 
-085B8       char_get_l14
-0939A       zero_KO
+09318       char_get_l14
+0a16a       zero_KO
 
-07F00       buffer_clear
+08c60       buffer_clear
 
-084D8		char_get_14      
-09060       assign_var
+09238		char_get_14      
+09de6       assign_var
 ; er0: char, er2: output adr
-07eae       screencls
-;dbd0       有意思
-;           0f 0e d9 0c 0b 0a 09 08 07 06
-[GADGETS]
-0b59a       cmp_gt
-13ad8       load_table
-090b0       mov er0,sp 
-26318       mov r1,0
-09d4c       sub r0,r8,pop er8
-08f20       er2+=er10,r0=0,[er8]+=er2,pop xr8
-091d8       setlr
-08f26       er2+=er10,st er2,[er8],pop xr8
-08f22       r0=0,[er8]+=er2,pop xr8
-203D2	    st r2,[er0]
-18bce       *er0=r2,r0=0
-130E2       pop QR0
-121a8       pop er0
-08fc2       pop er2
-16134       pop xr0
-26920       pop xr8
-187D6       pop er4
-0d06c       pop er8
-08f44       pop qr8
-18FE6       pop er12
-20d72       pop ER14
-14c58       pop xr4,pop qr8
-20d70       jpop er14
-12d34       jpop qr8
-2237a       jpop qr80
-23332       mov r0,r11,jpop xr4,qr8
-222AC       nop
-09D22       ENTER
-13CD0       LEAVE
-090B0       store_sp_er0
-;084F8   EA magic instr :)
-13ADC       l er0,[er2]
-13916       st er2,[er0]
-13aa8       L er8,[er0]
-10e52       l r0,[er14]
-1810e       l r0,[er0]
-15ee4       mov r2,r0,pop er0
-0ec6c       mov er0,1
-09a1a       mov er2,1
-1DA72       mov r0,0
-18812       mov r0,0,pop er2
-; ^^ rt DA-->OPTN 角度单位 r
-1fbe0       mov er0,er2
-14b14       mov er2,er0
-1e768       mov er0,er4,pop er4
-187e2       add er0,er2
-;14f0c
-12312       or r0,r1
-1b87a       sll r0,4
-;
-262b0       cif
-13abe       add er4,er0
-17B46       lea [er12]
-203d2       st r2,[er0]
-1c82c       st r2,[ea+]
-204e6       st r2,[ea+], pop xr4, pop qr8
-1D806       and r0,15
-20838       and r0,15
-;19940       and r1,15
-1a45e       and r1,15
-20840       and r1, 15, sll r0, 4, or r1, r0
-187e2       add er0,er2
-179bc       mov er14,er0,pop xr0
-08f28       st er2,[er8],pop xr8
-;13aa6  add er0 er2
-;14f0c  ~
-;187e2  ~
-;2abf8  ~
-;8eee   ~
-;d112 c4 --> complex mode
-;d11e --> math i/o
-;15ee4
-;f2de mov r2,r1
+08c0e       screencls
 
-;16d7c好函数，两两byte or运算
-;   r10 byte个数 er12 目标地址 ea 起始地址
+[GADGETS]
+0c790       cmp_gt
+13b9a       load_table
+09e80       mov er0,sp 
+2ac30       mov r1,0
+0ac5a       sub r0,r8,pop er8
+09c9c       er2+=er10,r0=0,[er8]+=er2,pop xr8
+09fa8       setlr
+09ca2       er2+=er10,st er2,[er8],pop xr8
+09c9e       r0=0,[er8]+=er2,pop xr8
+203D2	    st r2,[er0]
+18d34       *er0=r2,r0=0
+130a4       pop QR0
+12602       pop er0
+18974       pop er2
+17b34       pop xr0
+183a6       pop xr8
+250a6       pop er4
+0a8a6       pop er8
+12da8       pop qr8
+21636       pop er12
+15c78       pop ER14
+0ac3a       pop xr4,pop qr8
+20d60       jpop er14
+12da6       jpop qr8
+23f82       jpop qr80
+27568       mov r0,r11,jpop xr4,qr8
+0a8a8       nop
+0ac30       ENTER
+0ac38       LEAVE
+13b9e       l er0,[er2]
+139d8       st er2,[er0]
+13b6a       L er8,[er0]
+18274       l r0,[er0]
+15fde       mov r2,r0,pop er0
+1e60c       mov er0,1
+0a88a       mov er2,1
+1DD54       mov r0,0
+18978       mov r0,0,pop er2
+0BF30       mov er0,er2
+14bd6       mov er2,er0
+2470a       mov er0,er4,pop er4
+2fa0c       add er0,er2
+122d4       or r0,r1
+1bb5c       sll r0,4
+
+2abda       cif
+13b80       add er4,er0
+17cac       lea [er12]
+203d2       st r2,[er0]
+1cb0e       st r2,[ea+]
+204e6       st r2,[ea+], pop xr4, pop qr8
+1dae8       and r0,15
+1a6c8       and r1,15
+20840       and r1, 15, sll r0, 4, or r1, r0
+17b32       mov er14,er0,pop xr0
+09ca4       st er2,[er8],pop xr8
