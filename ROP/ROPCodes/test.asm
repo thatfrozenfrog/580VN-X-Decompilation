@@ -3,15 +3,17 @@ def 09846 bitmap
 def 0FFFE brk
 def 09FA8 EI
 def 0A05C DI
-org 0xe902
+
+org 0xe9e0
+main:
 EI
 DI
-start:
+
+
 clear_ddd4
-pop xr0 (00 00 2a 3f)
+pop xr0 (01 01 c0 3f)
 bitmap
 render_ddd4
-pop er14
-hex 0a e9
-jpop er14
 
+pop er0 
+adr main [-2]

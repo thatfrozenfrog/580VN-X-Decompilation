@@ -1,79 +1,79 @@
-# 汇编器语法
+# Assembler syntax
 
-## 1. org  
-开启一个新的代码段并设置起始地址。本段中所有的地址（标签计算）以这个地址开始。也可以使用标签定义地址。  
+## 1. org
+Define a new code segment with the starting address. All addresses in this segment start with this address. Labels can also be used to define addresses.
 ```
-org 0x3a3b ; 这一段的起始地址为3a3b
+org 0x3a3b; The starting address of this segment is 3a3b
 hex .. ..
-label: ; 标签位置在3a3c
-org 0x4a4b ; 这一段的起始地址为4a4b
-org &label +2 ; 这一段的起始位置为3a3e
-org & +10 ; 这一段的起始位置为3a4e
-;注意，&后要加上空格
+label:; The label position is 3a3c
+org 0x4a4b; The starting address of this segment is 4a4b
+org &label +2; The starting position of this segment is 3a3e
+org & +10; The starting position of this segment is 3a4e
+;Note that there should be a space after &
 ```
-org后跟大括号代表插入代码段，大括号结束时回到之前的段。    
+`org` followed by a curly brace indicates the insertion of a code segment, and close the curly brace to return to the previous segment.
 ```
 org 0xd522
-hex .. .. ; 这里是d524
-org & -8 { ; 这一段的起始位置为d51c（注意要加空格)
-    hex .. .. .. ..
+hex .. .. ; Here is d524
+org & -8 { ; The starting position of this section is d51c (note the need for a space)
+hex .. .. .. ..
 }
-; 这里又回到了d524
+; Here it returns to d524
 ```
-如果两段重合，编译器会合并代码，一旦出现冲突就会报错。
-## 2. hex  
+If the two sections overlap, the compiler will merge the code, and an error will be reported if there is a conflict.
+## 2. hex
 ```
 hex 3. .. 30 43
 ```
-直接写16进制，内容会直接原封不动视为一串16进制。.代表可以取任何值（由编译器决定）。hex可以省略。  
+Write raw hex for the compiler.
 
-## 3. 标签/取地址  
+## 3. Label/address
 
 ```
 #org d522
-hex 33 33 
-loop:   ;<--此时，标签代表的地址是(0xd522+2=0xd524)
+hex 33 33
+loop: ;<--At this time, the address represented by the label is (0xd522+2=0xd524)
 hex .. .. .. ..
-adr loop ; <-- 'adr loop' 会被替换成：hex 24 d5 (d524, loop的地址)
+adr loop ; <-- 'adr loop' will be replaced by: hex 24 d5 (d524, loop address)
 adr loop 55 ; <- 0xd524+55
 adr loop -2 ; <- 0xd522
-adr +2 ; <-- 不写标签名，则表示从当前地址(d52e)起算，替换成d530
+adr +2 ; <-- If the label name is not written, it means starting from the current address (d52e), it will be replaced by d530
 
 ```
 
-## 4. 函数标签  
-所有可用标签请查看sym.txt  
-注意，所有标签使用需要单独成行
+## 4. Function label
+For all available labels, please check sym.txt
+Note that all labels need to be used in separate lines
 ```
-例子：sym.txt 115 行：
-20840       and r1, 15, sll r0, 4, or r1, r0
-当你在汇编中，使用
+Example: sym.txt 115 Line:
+20840 and r1, 15, sll r0, 4, or r1, r0
+When you use
 and r1, 15, sll r0, 4, or r1, r0
-会被替换为 hex 40 08 .2 ..
+in assembly, it will be replaced by hex 40 08 .2 ..
 ```
 
 ```
-例子2：sym.txt 115 行：
-@0F746       read_key
-当你在汇编中，使用
+Example 2: sym.txt line 115:
+@0F746 read_key
+When you use
 read_key
-会被替换为 hex 48 f7 .2 ..(注意,当地址前面带'@',汇编器会自动将地址+2)
+in assembly, it will be replaced by hex 48 f7 .2 .. (Note that when the address is preceded by '@', the assembler will automatically add 2 to the address)
 ```
 
-用def来定义标签，如`def @22040 diag`。
+Define labels with def, such as `def @22040 diag`.
 
-带参数个数的函数标签：在地址后面跟括号，里面写调用这个标签时pop的字节数。pop pc不算在内。例如pop qr0的标签可以写作`def 130e2(8) pop qr0`。在程序中调用这类函数标签，后面必须跟括号，里面是相应数目的字节。例如`pop qr0 (31 32 .. .. .. .6 7. fe)`。
+Function labels with the number of parameters: the address is followed by parentheses, and the number of bytes to pop when calling this label is written in them. Pop pc is not counted. For example, the label of pop qr0 can be written as `def 130e2(8) pop qr0`. When calling such function labels in a program, they must be followed by parentheses with the corresponding number of bytes. For example, `pop qr0 (31 32 .. .. .. 6 7. fe)`.
 
-## 5.使用asm.py
+## 5. Using asm.py
 Windows:
 ```
-python3.exe .\asm.py xxx (你想编译的文件）
-python3.exe .\asm.py xxx (你想编译的文件）-min  ;原封不动输出 hex中的 ..  而不是自动替换
+python3.exe .\asm.py xxx (the file you want to compile)
+python3.exe .\asm.py xxx (the file you want to compile) -min; Output the .. in hex as is instead of automatically replacing it
 
 ```
 Linux:
 ```
-python3 ./asm.py xxx (你想编译的文件）
-python3 ./asm.py xxx (你想编译的文件）-min  ;原封不动输出 hex中的 ..  而不是自动替换
+python3 ./asm.py xxx (the file you want to compile)
+python3 ./asm.py xxx (the file you want to compile) -min; Output the .. in hex as is instead of automatically replacing it
 
 ```
